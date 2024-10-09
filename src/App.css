@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+DE+Grund:wght@100..400&display=swap');
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+body{
+  margin: 0;
+  padding: 0;
+  background-image: url(Fondo2.jpg);   
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.add-btn {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+
+/* Estilo del modal */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content:space-between; 
+  height: 80vh; 
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px; 
+  flex-grow: 1; 
+  justify-content: center; 
+}
+
+.modal-content input, .modal-content textarea {
+  width: 90%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-content textarea {
+  height: 100px; 
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center; 
+  margin-top: auto;
+}
+
+.modal-actions button {
+  padding: 8px 16px; /* Tamaño pequeño de los botones */
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+}
+
+.modal-actions button[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.modal-actions button[type="button"] {
+  background-color: #f44336;
+  color: white;
+}
+/* Estilo general del contenedor */
+.container {
+  width: 90%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  
+}
+
+form {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.anime-item {
+  display:flex;
+  flex-direction: column;
+  border: 1px solid #e9c1c1;
+  border-radius: 15px;
+  margin-bottom: 25px;
+  background-color: #fff;
+}
+
+.anime-info {
+  display:flex;
+  gap: 20px; 
+  
+}
+
+.anime-img {
+  
+  width: 350px;
+  border-radius: 5px;
+  padding:10px
+
+}
+
+.anime-details {
+  padding:5px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.anime-details h2 {
+  margin: 5px;
+  font-family: Playwrite;
+}
+
+.anime-details p {
+  margin: 10px 0;
+  font-family: Open Sans;
+  display: flex;
+
+}
+
+.anime-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.anime-actions button {
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: none;
+  cursor:pointer;
+}
+
+.anime-actions .edit {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.anime-actions .delete {
+  background-color: #f44336;
+  color: white;
+}
+
+.search-bar {
+  width: 90%;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 40px;
+  font-size: 18px;
+}
+  
+::placeholder{
+  color: gray;
+}

@@ -1,0 +1,144 @@
+/* Contenedor principal */
+.container {
+  width: 90%;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+/* Títulos principales */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+/* Estilo del formulario */
+form {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  padding: 10px;
+  font-size: 1rem;
+  flex: 1;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Lista de animes */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+li h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+/* Detalles del anime */
+p {
+  margin: 5px 0;
+}
+
+strong {
+  font-weight: bold;
+}
+
+/* Contenedor de botones de editar y eliminar */
+li div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.edit, .delete {
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  font-size: 1rem;
+}
+
+.edit {
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+}
+
+.delete {
+  background-color: #f44336;
+  color: white;
+  border-radius: 5px;
+}
+
+a {
+  color: #6a1b9a;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Estilo del modal */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-header {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cancel-btn, .save-btn {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
