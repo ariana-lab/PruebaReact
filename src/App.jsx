@@ -1,104 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import data from './data.json';
+import React, { useState, useEffect } from "react";
+import axios from 'axios'; 
+import "./App.css";
+import data from "./data.json";
 
 function App() {
-
   const [animeList, setAnimeList] = useState([]);
   const [anime, setAnime] = useState({
-    studio: '',
-    genres: '',
+    studio: "",
+    genres: "",
     hype: 0,
-    description: '',
-    title: { text: '', link: '' },
-    start_date: '',
-  }); // Objeto individual para crear/editar animes
+    description: "",
+    title: { text: "", link: "" },
+    start_date: "",
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [currentAnimeId, setCurrentAnimeId] = useState(null);
-  const [showModal, setShowModal] = useState(false);  // Controla el modal de agregar
-  const [showEditModal, setShowEditModal] = useState(false); // Controla el modal de editarb
+  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const API_URL='https://66fffb4b4da5bd237552c00b.mockapi.io/api/v1/:endpoint'
 
-  // Crear un nuevo anime
+  useEffect(() => {
+    axios
+      .get(API_URL)
+      .then((response) => {
+        setUsers(response.data); // Actualizar el estado con los datos recibidos
+      })
+      .catch((error) => {
+        console.error('Error fetching data from MockAPI:', error);
+      });
+  }, []);
+
   const addAnime = (e) => {
     e.preventDefault();
-    if (!anime.title.text || !anime.studio || !anime.genres || !anime.description) return;
+    if (
+      !anime.title.text ||
+      !anime.studio ||
+      !anime.genres ||
+      !anime.description
+    )
+      return;
 
-    const newAnime = { ...anime, id: Date.now(), genres: anime.genres.split(', ') };
+    const newAnime = {
+      ...anime,
+      id: Date.now(),
+      genres: Array.isArray(anime.genres)
+        ? anime.genres
+        : anime.genres.split(", ").map((genre) => genre.trim()),
+    };
     setAnimeList([...animeList, newAnime]);
     setAnime({
-      studio: '',
-      genres: '',
+      studio: "",
+      genres: "",
       hype: 0,
-      description: '',
-      title: { text: '', link: '' },
-      start_date: '',
+      description: "",
+      title: { text: "", link: "" },
+      start_date: "",
     });
-    setShowModal(false); // Cerrar el modal después de añadir
+    setShowModal(false);
   };
 
-  // Eliminar un anime
   const deleteAnime = (id) => {
-    const confirmDelete = window.confirm("¿Estás seguro de que quieres eliminar este anime?");
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que quieres eliminar este anime?"
+    );
     if (confirmDelete) {
       setAnimeList(animeList.filter((anime) => anime.hype !== id));
     }
   };
 
-  // Editar un anime (Abrir modal)
   const editAnime = (anime) => {
     setIsEditing(true);
     setAnime(anime);
     setCurrentAnimeId(anime.id);
-    setShowEditModal(true); // Mostrar modal de edición
+    setShowEditModal(true);
   };
 
-  // Cerrar modal
   const closeModal = () => {
-    setShowModal(false); // Para agregar
-    setShowEditModal(false); // Para editar
+    setShowModal(false);
+    setShowEditModal(false);
     setAnime({
-      studio: '',
-      genres: '',
+      studio: "",
+      genres: "",
       hype: 0,
-      description: '',
-      title: { text: '', link: '' },
-      start_date: '',
+      description: "",
+      title: { text: "", link: "" },
+      start_date: "",
     });
     setIsEditing(false);
     setCurrentAnimeId(null);
   };
 
-  // Actualizar un anime editado
   const updateAnime = (e) => {
     e.preventDefault();
     setAnimeList(
       animeList.map((item) =>
-        item.id === currentAnimeId ? { ...item, ...anime, genres: anime.genres.split(', ') } : item
+        item.id === currentAnimeId
+          ? {
+              ...item,
+              ...anime,
+              genres: Array.isArray(anime.genres)
+                ? anime.genres
+                : anime.genres.split(", ").map((genre) => genre.trim()),
+            }
+          : item
       )
     );
-    closeModal(); // Cerrar modal después de editar
+    closeModal();
   };
-  const [searchTerm, setSearchTerm] = useState('');
 
-  //Guardamos la lista de animes en el localStorage cada vez que se actualice
-  useEffect(() => {
-    if (!localStorage.getItem('animeList')) {
-      setAnimeList(data);
-    }
-  }, []);
-  
-  // Función para manejar el cambio en la barra de búsqueda
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
-  
-  // Filtrar los animes según el término de búsqueda
+
   const filteredAnimeList = animeList.filter((anime) =>
     anime.title.text.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   return (
     <div className="container">
-      <h1><img src='./img/tituloAnime.png' alt=''></img></h1>
+      <h1>
+        <img src="./img/tituloAnime.png" alt=""></img>
+      </h1>
       <input
         type="text"
         placeholder="Buscar anime..."
@@ -113,26 +136,63 @@ function App() {
         {filteredAnimeList.map((anime) => (
           <li key={anime.id} className="anime-item">
             <div className="anime-info">
-              <a href={anime.title.link} target="_blank" rel="noopener noreferrer">
-                <img className="anime-img" src={anime.image} alt="Imagen del anime" />
+              <a
+                href={anime.title.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  className="anime-img"
+                  src={anime.image}
+                  alt="Imagen del anime"
+                />
               </a>
               <div className="anime-details">
-                <h2><a href={anime.title.link} target="_blank" rel="noopener noreferrer">{anime.title.text}</a></h2>
-                <p><strong>Estudio:</strong> {anime.studio}</p>
-                <p><strong>Géneros:</strong> {anime.genres.join(', ')}</p>
-                <p><strong>Hype:</strong> {anime.hype}</p>
+                <h2>
+                  <a
+                    href={anime.title.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {anime.title.text}
+                  </a>
+                </h2>
+                <p>
+                  <strong>Estudio:</strong> {anime.studio}
+                </p>
+                <p>
+                  <strong>Géneros:</strong>{" "}
+                  {Array.isArray(anime.genres)
+                    ? anime.genres.join(", ")
+                    : anime.genres}
+                </p>
+                <p>
+                  <strong>Hype:</strong> {anime.hype}
+                </p>
                 <p>{anime.description}</p>
-                <a href={anime.title.link} target="_blank" rel="noopener noreferrer">Ver más</a>
+                <a
+                  href={anime.title.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ver más
+                </a>
               </div>
             </div>
             <div className="anime-actions">
-              <button className="edit" onClick={() => editAnime(anime)}>Editar</button>
-              <button className="delete" onClick={() => deleteAnime(anime.hype)}>Eliminar</button>
+              <button className="edit" onClick={() => editAnime(anime)}>
+                Editar
+              </button>
+              <button
+                className="delete"
+                onClick={() => deleteAnime(anime.hype)}
+              >
+                Eliminar
+              </button>
             </div>
           </li>
         ))}
       </ul>
-      {/* Modal para agregar anime */}
       {showModal && (
         <div className="modal">
           <div className="modal-content">
@@ -143,7 +203,10 @@ function App() {
                 placeholder="Título del anime"
                 value={anime.title.text}
                 onChange={(e) =>
-                  setAnime({ ...anime, title: { ...anime.title, text: e.target.value } })
+                  setAnime({
+                    ...anime,
+                    title: { ...anime.title, text: e.target.value },
+                  })
                 }
               />
               <input
@@ -162,12 +225,19 @@ function App() {
                 type="number"
                 placeholder="Hype"
                 value={anime.hype}
-                onChange={(e) => setAnime({ ...anime, hype: parseInt(e.target.value, 10) || 0 })}
+                onChange={(e) =>
+                  setAnime({
+                    ...anime,
+                    hype: parseInt(e.target.value, 10) || 0,
+                  })
+                }
               />
               <textarea
                 placeholder="Descripción del anime"
                 value={anime.description}
-                onChange={(e) => setAnime({ ...anime, description: e.target.value })}
+                onChange={(e) =>
+                  setAnime({ ...anime, description: e.target.value })
+                }
               />
               <button type="submit">Agregar Anime</button>
               <button type="button" onClick={closeModal}>
@@ -177,7 +247,6 @@ function App() {
           </div>
         </div>
       )}
-      {/* Modal para editar anime */}
       {showEditModal && (
         <div className="modal">
           <div className="modal-content">
@@ -187,7 +256,10 @@ function App() {
                 type="text"
                 value={anime.title.text}
                 onChange={(e) =>
-                  setAnime({ ...anime, title: { ...anime.title, text: e.target.value } })
+                  setAnime({
+                    ...anime,
+                    title: { ...anime.title, text: e.target.value },
+                  })
                 }
               />
               <input
@@ -197,17 +269,28 @@ function App() {
               />
               <input
                 type="text"
-                value={anime.genres}
+                value={
+                  Array.isArray(anime.genres)
+                    ? anime.genres.join(", ")
+                    : anime.genres
+                }
                 onChange={(e) => setAnime({ ...anime, genres: e.target.value })}
               />
               <input
-                type="text"
+                type="number"
                 value={anime.hype}
-                onChange={(e) => setAnime({ ...anime, hype: e.target.value })}
+                onChange={(e) =>
+                  setAnime({
+                    ...anime,
+                    hype: parseInt(e.target.value, 10) || 0,
+                  })
+                }
               />
               <textarea
                 value={anime.description}
-                onChange={(e) => setAnime({ ...anime, description: e.target.value })}
+                onChange={(e) =>
+                  setAnime({ ...anime, description: e.target.value })
+                }
               />
               <button type="submit">Guardar cambios</button>
               <button type="button" onClick={closeModal}>
@@ -222,4 +305,3 @@ function App() {
 }
 
 export default App;
-
