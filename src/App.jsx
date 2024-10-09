@@ -4,10 +4,7 @@ import data from './data.json';
 
 function App() {
 
-  const [animeList, setAnimeList] = useState(()=> {
-    const savedAnimeList = localStorage.getItem('animeList');
-    return savedAnimeList ? JSON.parse(savedAnimeList) : [{data}];
-  });
+  const [animeList, setAnimeList] = useState([]);
   const [anime, setAnime] = useState({
     studio: '',
     genres: '',
@@ -130,7 +127,7 @@ function App() {
             </div>
             <div className="anime-actions">
               <button className="edit" onClick={() => editAnime(anime)}>Editar</button>
-              <button className="delete" onClick={() => deleteAnime(anime.id)}>Eliminar</button>
+              <button className="delete" onClick={() => deleteAnime(anime.hype)}>Eliminar</button>
             </div>
           </li>
         ))}
