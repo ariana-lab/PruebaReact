@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios'; 
 import "./App.css";
-import data from "./data.json";
 
 function App() {
   const [animeList, setAnimeList] = useState([]);
@@ -13,24 +12,28 @@ function App() {
     title: { text: "", link: "" },
     start_date: "",
   });
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);  // Añadí el estado isEditing
   const [currentAnimeId, setCurrentAnimeId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const API_URL='https://66fffb4b4da5bd237552c00b.mockapi.io/api/v1/:endpoint'
 
+  // Asegúrate de que esta URL sea válida
+  const API_URL='https://66fffb4b4da5bd237552c00b.mockapi.io/api/v1/anime';
+
+  // Fetch de datos de la API usando axios
   useEffect(() => {
     axios
       .get(API_URL)
       .then((response) => {
-        setUsers(response.data); // Actualizar el estado con los datos recibidos
+        setAnimeList(response.data);  // Actualizar la lista de animes
       })
       .catch((error) => {
         console.error('Error fetching data from MockAPI:', error);
       });
   }, []);
 
+  // Agregar un nuevo anime
   const addAnime = (e) => {
     e.preventDefault();
     if (
@@ -43,12 +46,21 @@ function App() {
 
     const newAnime = {
       ...anime,
-      id: Date.now(),
+      id: Date.now(),  // Generar un ID único
       genres: Array.isArray(anime.genres)
         ? anime.genres
         : anime.genres.split(", ").map((genre) => genre.trim()),
     };
-    setAnimeList([...animeList, newAnime]);
+
+    // Hacer la petición POST a la API
+    axios.post(API_URL, newAnime)
+      .then(() => {
+        setAnimeList([...animeList, newAnime]);
+        setShowModal(false);
+      })
+      .catch(error => console.error('Error adding new anime:', error));
+    
+    // Reiniciar el formulario
     setAnime({
       studio: "",
       genres: "",
@@ -57,18 +69,23 @@ function App() {
       title: { text: "", link: "" },
       start_date: "",
     });
-    setShowModal(false);
   };
 
+  // Eliminar un anime
   const deleteAnime = (id) => {
     const confirmDelete = window.confirm(
       "¿Estás seguro de que quieres eliminar este anime?"
     );
     if (confirmDelete) {
-      setAnimeList(animeList.filter((anime) => anime.hype !== id));
+      axios.delete(`${API_URL}/${id}`)
+        .then(() => {
+          setAnimeList(animeList.filter((anime) => anime.id !== id));
+        })
+        .catch(error => console.error('Error deleting anime:', error));
     }
   };
 
+  // Editar un anime
   const editAnime = (anime) => {
     setIsEditing(true);
     setAnime(anime);
@@ -76,6 +93,7 @@ function App() {
     setShowEditModal(true);
   };
 
+  // Cerrar el modal
   const closeModal = () => {
     setShowModal(false);
     setShowEditModal(false);
@@ -91,24 +109,31 @@ function App() {
     setCurrentAnimeId(null);
   };
 
+  // Actualizar un anime
   const updateAnime = (e) => {
     e.preventDefault();
-    setAnimeList(
-      animeList.map((item) =>
-        item.id === currentAnimeId
-          ? {
-              ...item,
-              ...anime,
-              genres: Array.isArray(anime.genres)
-                ? anime.genres
-                : anime.genres.split(", ").map((genre) => genre.trim()),
-            }
-          : item
-      )
-    );
-    closeModal();
+    
+    axios.put(`${API_URL}/${currentAnimeId}`, anime)
+      .then(() => {
+        setAnimeList(
+          animeList.map((item) =>
+            item.id === currentAnimeId
+              ? {
+                  ...item,
+                  ...anime,
+                  genres: Array.isArray(anime.genres)
+                    ? anime.genres
+                    : anime.genres.split(", ").map((genre) => genre.trim()),
+                }
+              : item
+          )
+        );
+        closeModal();
+      })
+      .catch(error => console.error('Error updating anime:', error));
   };
 
+  // Búsqueda de anime
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -185,7 +210,7 @@ function App() {
               </button>
               <button
                 className="delete"
-                onClick={() => deleteAnime(anime.hype)}
+                onClick={() => deleteAnime(anime.id)} // Eliminar usando el id
               >
                 Eliminar
               </button>
@@ -193,6 +218,7 @@ function App() {
           </li>
         ))}
       </ul>
+
       {showModal && (
         <div className="modal">
           <div className="modal-content">
@@ -247,6 +273,7 @@ function App() {
           </div>
         </div>
       )}
+
       {showEditModal && (
         <div className="modal">
           <div className="modal-content">
