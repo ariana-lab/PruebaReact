@@ -1,4 +1,4 @@
-[
+[ 
     {
       "studio": "Wit Studio",
       "genres": ["Action", "Fantasy", "Horror", "Suspense"],
@@ -10,7 +10,8 @@
       },
       "start_date": "Apr 8, 2016, 00:55 (JST)",
       "image":"https://m.media-amazon.com/images/M/MV5BMTY5NTkwMTctYjRkNC00MWJiLTgxNmUtZTA3Yzk0OGI3NWU1XkEyXkFqcGc@._V1_.jpg"
-    },
+      },
+    
     {
       "studio": "Bones",
       "genres": [
@@ -27,6 +28,7 @@
       "start_date": "Apr 7, 2016, 01:05 (JST)",
       "image":"https://m.media-amazon.com/images/M/MV5BYzA5Y2MzNDAtZjBjZi00OTUzLWI5NDAtMTg1ODRhMmU2MGY3XkEyXkFqcGc@._V1_.jpg"
     },
+
     {
       "studio": "A-1 Pictures",
       "genres": [

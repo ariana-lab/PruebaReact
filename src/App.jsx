@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios'; 
 import "./App.css";
+import axios from 'axios';
+
 
 function App() {
   const [animeList, setAnimeList] = useState([]);
@@ -11,55 +12,67 @@ function App() {
     description: "",
     title: { text: "", link: "" },
     start_date: "",
-  });
-  const [isEditing, setIsEditing] = useState(false);  // Añadí el estado isEditing
+  }); 
+
+  const [isEditing, setIsEditing] = useState(false);
   const [currentAnimeId, setCurrentAnimeId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Asegúrate de que esta URL sea válida
-  const API_URL='https://66fffb4b4da5bd237552c00b.mockapi.io/api/v1/anime';
+  const API = import.meta.env.VITE_API_URL;
 
-  // Fetch de datos de la API usando axios
+  const getAnimeList = async () => {
+    try {
+      const res = await axios.get(`${API}/Anime`);
+      setAnimeList(res.data);  // Actualiza el estado solo una vez
+    } catch (error) {
+      console.error("Error fetching data from API:", error);
+    }
+  };
   useEffect(() => {
-    axios
-      .get(API_URL)
-      .then((response) => {
-        setAnimeList(response.data);  // Actualizar la lista de animes
-      })
-      .catch((error) => {
-        console.error('Error fetching data from MockAPI:', error);
-      });
-  }, []);
+    getAnimeList();
+    }, [])
+  // Fetch de datos de la API usando fetch
+  
 
   // Agregar un nuevo anime
   const addAnime = (e) => {
     e.preventDefault();
-    if (
-      !anime.title.text ||
-      !anime.studio ||
-      !anime.genres ||
-      !anime.description
-    )
+    if (!anime.title.text || !anime.studio || !anime.genres || !anime.description)
       return;
 
     const newAnime = {
-      ...anime,
-      id: Date.now(),  // Generar un ID único
+      studio: anime.studio,
       genres: Array.isArray(anime.genres)
         ? anime.genres
         : anime.genres.split(", ").map((genre) => genre.trim()),
+      hype: anime.hype,
+      description: anime.description,
+      title: { text: anime.title.text, link: anime.title.link },
+      start_date: anime.start_date,
     };
 
-    // Hacer la petición POST a la API
-    axios.post(API_URL, newAnime)
+    // Hacer la petición POST a la API con fetch
+    fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newAnime),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error adding new anime");
+        }
+        return response.json();
+      })
       .then(() => {
         setAnimeList([...animeList, newAnime]);
         setShowModal(false);
       })
-      .catch(error => console.error('Error adding new anime:', error));
-    
+      .catch((error) => console.error("Error adding new anime:", error));
+
     // Reiniciar el formulario
     setAnime({
       studio: "",
@@ -68,6 +81,7 @@ function App() {
       description: "",
       title: { text: "", link: "" },
       start_date: "",
+      image,
     });
   };
 
@@ -77,11 +91,16 @@ function App() {
       "¿Estás seguro de que quieres eliminar este anime?"
     );
     if (confirmDelete) {
-      axios.delete(`${API_URL}/${id}`)
-        .then(() => {
+      fetch(`${API}/${id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Error deleting anime");
+          }
           setAnimeList(animeList.filter((anime) => anime.id !== id));
         })
-        .catch(error => console.error('Error deleting anime:', error));
+        .catch((error) => console.error("Error deleting anime:", error));
     }
   };
 
@@ -112,8 +131,20 @@ function App() {
   // Actualizar un anime
   const updateAnime = (e) => {
     e.preventDefault();
-    
-    axios.put(`${API_URL}/${currentAnimeId}`, anime)
+
+    fetch(`${API}/${currentAnimeId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(anime),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error updating anime");
+        }
+        return response.json();
+      })
       .then(() => {
         setAnimeList(
           animeList.map((item) =>
@@ -130,7 +161,7 @@ function App() {
         );
         closeModal();
       })
-      .catch(error => console.error('Error updating anime:', error));
+      .catch((error) => console.error("Error updating anime:", error));
   };
 
   // Búsqueda de anime
@@ -210,7 +241,7 @@ function App() {
               </button>
               <button
                 className="delete"
-                onClick={() => deleteAnime(anime.id)} // Eliminar usando el id
+                onClick={() => deleteAnime(anime.id)}
               >
                 Eliminar
               </button>
@@ -218,7 +249,6 @@ function App() {
           </li>
         ))}
       </ul>
-
       {showModal && (
         <div className="modal">
           <div className="modal-content">
@@ -273,7 +303,6 @@ function App() {
           </div>
         </div>
       )}
-
       {showEditModal && (
         <div className="modal">
           <div className="modal-content">
