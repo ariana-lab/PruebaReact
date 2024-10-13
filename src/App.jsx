@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import axios from 'axios';
+import tituloAnime from "./img/tituloAnime.png"
 
 
 function App() {
@@ -193,7 +194,7 @@ function App() {
   return (
     <div className="container">
       <h1>
-        <img src="./img/tituloAnime.png" alt=""></img>
+        <img src={tituloAnime} alt=""></img>
       </h1>
       <input
         type="text"
