@@ -15,7 +15,6 @@ function App() {
     start_date: "",
     image: "",  
   }); 
-
   const [isEditing, setIsEditing] = useState(false);
   const [currentAnimeId, setCurrentAnimeId] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -94,8 +93,6 @@ function App() {
       alert("No se pudo agregar el anime. Intenta de nuevo."); // Mensaje de alerta para el usuario
     }
   };
-  
-
   // Eliminar un anime
   const deleteAnime = async (id) => {
     const confirmDelete = window.confirm(
@@ -123,7 +120,7 @@ function App() {
         console.error("Error deleting anime:", error);
       }
     }
-};
+  };
   // Editar un anime
   const editAnime = (anime) => {
     setIsEditing(true);
@@ -131,7 +128,6 @@ function App() {
     setCurrentAnimeId(anime.id);
     setShowEditModal(true);
   };
-
   // Cerrar el modal
   const closeModal = () => {
     setShowModal(false);
@@ -147,7 +143,6 @@ function App() {
     setIsEditing(false);
     setCurrentAnimeId(null);
   };
-
   // Actualizar un anime
   const updateAnime = async (e) => {
     e.preventDefault();
@@ -186,17 +181,15 @@ function App() {
     } catch (error) {
         console.error("Error updating anime:", error);
     }
-};
+  };
   // Búsqueda de anime
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
-
   const filteredAnimeList = animeList.filter((anime) =>
     anime.title && anime.title.text && anime.title.text.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
-
   return (
     <div className="container">
       <h1>
@@ -209,7 +202,7 @@ function App() {
         onChange={handleSearchChange}
         className="search-bar"
       />
-      <button className="add-btn" onClick={() => setShowModal(true)}>
+      <button className="add-btn-inicio" onClick={() => setShowModal(true)}>
         Agregar Anime
       </button>
       <ul>
@@ -277,7 +270,7 @@ function App() {
         <div className="modal">
           <div className="modal-content">
             <h2>Agregar Anime</h2>
-            <form onSubmit={addAnime}>
+            <form onSubmit={addAnime} className="from-modal">
               <input
                 type="text"
                 placeholder="Título del anime"
@@ -285,21 +278,25 @@ function App() {
                 onChange={(e) =>
                   setAnime({
                     ...anime,
-                    title: { ...anime.title, text: e.target.value },
-                  })
+                    title: { ...anime.title, text: e.target.value }})
                 }
+                className="modal-input"
               />
               <input
                 type="text"
                 placeholder="Estudio"
                 value={anime.studio}
-                onChange={(e) => setAnime({ ...anime, studio: e.target.value })}
+                onChange={(e) => setAnime({ ...anime, studio: e.target.value })
+              } 
+              className="modal-input"
               />
               <input
                 type="text"
                 placeholder="Géneros (separados por coma)"
                 value={anime.genres}
-                onChange={(e) => setAnime({ ...anime, genres: e.target.value })}
+                onChange={(e) => setAnime({ ...anime, genres: e.target.value })
+              } 
+                className="modal-input"
               />
               <input
                 type="number"
@@ -310,14 +307,16 @@ function App() {
                     ...anime,
                     hype: parseInt(e.target.value, 10) || 0,
                   })
-                }
+                } 
+                className="modal-input"
               />
               <textarea
                 placeholder="Descripción del anime"
                 value={anime.description}
                 onChange={(e) =>
                   setAnime({ ...anime, description: e.target.value })
-                }
+                } 
+                className="modal-input"
               />
               <input
                 type="text"
@@ -329,17 +328,24 @@ function App() {
                     title: { ...anime.title, link: e.target.value },
                   })
                 }
+                className="modal-input"
               />
               <input
                 type="text"
                 placeholder="URL de la imagen (opcional)"
                 value={anime.image}
-                onChange={(e) => setAnime({ ...anime, image: e.target.value })}
+                onChange={(e) => setAnime({ ...anime, image: e.target.value })
+              }
+              className="modal-input"
               />
-              <button type="submit">Agregar Anime</button>
-              <button type="button" onClick={closeModal}>
-                Cancelar
-              </button>
+              <div className="modal-buttons">
+                <button type="button" onClick={closeModal} className="cancel-btn">
+                  Cancelar
+                </button>
+                <button type="submit" className="add-btn">
+                  Agregar
+                </button>
+              </div>
             </form>
           </div>
         </div>
@@ -348,7 +354,7 @@ function App() {
         <div className="modal">
           <div className="modal-content">
             <h2>Editar Anime</h2>
-            <form onSubmit={updateAnime}>
+            <form onSubmit={updateAnime} className="from-modal">
               <input
                 type="text"
                 value={anime.title.text}
@@ -358,6 +364,7 @@ function App() {
                     title: { ...anime.title, text: e.target.value },
                   })
                 }
+                className="modal-input"
               />
               <input
                 type="text"
@@ -369,11 +376,14 @@ function App() {
                     title: { ...anime.title, link: e.target.value },
                   })
                 }
+                className="modal-input"
               />
               <input
                 type="text"
                 value={anime.studio}
-                onChange={(e) => setAnime({ ...anime, studio: e.target.value })}
+                onChange={(e) => setAnime({ ...anime, studio: e.target.value })
+              }
+              className="modal-input"
               />
               <input
                 type="text"
@@ -382,7 +392,9 @@ function App() {
                     ? anime.genres.join(", ")
                     : anime.genres
                 }
-                onChange={(e) => setAnime({ ...anime, genres: e.target.value })}
+                onChange={(e) => setAnime({ ...anime, genres: e.target.value })
+              }
+              className="modal-input"
               />
               <input
                 type="number"
@@ -393,6 +405,7 @@ function App() {
                     hype: parseInt(e.target.value, 10) || 0,
                   })
                 }
+                className="modal-input"
               />
               <textarea
                 value={anime.description}
@@ -404,12 +417,19 @@ function App() {
                 type="text"
                 placeholder="URL de la imagen (opcional)"
                 value={anime.image}
-                onChange={(e) => setAnime({ ...anime, image: e.target.value })}
+                onChange={(e) => setAnime({ ...anime, image: e.target.value })
+              }
+              className="modal-input"
               />
-              <button type="submit">Guardar cambios</button>
-              <button type="button" onClick={closeModal}>
-                Cancelar
-              </button>
+
+              <div className="modal-buttons">
+                <button type="button" onClick={closeModal} className="cancel-btn">
+                  Cancelar
+                </button>
+                <button type="submit" className="add-btn">
+                Guardar cambios
+                </button>
+              </div>
             </form>
           </div>
         </div>

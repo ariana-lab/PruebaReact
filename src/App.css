@@ -61,7 +61,7 @@ textarea {
   margin-bottom: 10px;
 }
 
-.add-btn {
+.add-btn-inicio {
   padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
@@ -73,67 +73,101 @@ textarea {
 }
 
 
-/* Estilo del modal */
+/* Estilos generales para el modal */
 .modal {
   position: fixed;
-  top: 50%;
-  left: 40%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  flex-direction: column;
-  justify-content:space-between; 
-  height: 80vh; 
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
 }
 
 .modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 100%;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  background-image: url('https://img.freepik.com/foto-gratis/representacion-3d-escenario-carretera_23-2151293959.jpg'); 
+  background-size: cover; 
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+}
+
+h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+  font-family: "Play write DE Grund";
+}
+
+.form-modal {
   display: flex;
   flex-direction: column;
-  gap: 30px; 
-  flex-grow: 1; 
-  justify-content: center; 
+  align-items: center;
 }
 
-.modal-content input, .modal-content textarea {
-  width: 90%;
+/* Estilos para los inputs */
+.modal-input {
+  width: 100%;
   padding: 10px;
-  font-size: 1rem;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
-.modal-content textarea {
-  height: 100px; 
+textarea.modal-input {
+  height: 100px;
+  resize: none;
 }
 
-.modal-actions {
+/* Estilos para los botones */
+
+.modal-buttons {
   display: flex;
-  justify-content: center; 
-  margin-top: auto;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 20px;
 }
 
-.modal-actions button {
-  padding: 8px 16px; /* Tamaño pequeño de los botones */
-  font-size: 0.9rem;
-  cursor: pointer;
+.add-btn, .cancel-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
   border: none;
-  border-radius: 5px;
-  background-color: #f1f1f1;
+  border-radius: 30px;
+  cursor: pointer;
+  width: 48%;
+  color: #fff;
 }
 
-.modal-actions button[type="submit"] {
-  background-color: #4CAF50;
-  color: white;
+.add-btn {
+  background-color: #28a745;
 }
 
-.modal-actions button[type="button"] {
-  background-color: #f44336;
-  color: white;
+.cancel-btn {
+  background-color: #dc3545;
 }
+
+.add-btn:hover {
+  background-color: #218838;
+}
+
+.cancel-btn:hover {
+  background-color: #c82333;
+}
+
 /* Estilo general del contenedor */
 .container {
   width: 90%;
