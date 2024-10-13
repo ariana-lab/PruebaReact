@@ -13,6 +13,7 @@ function App() {
     description: "",
     title: { text: "", link: "" },
     start_date: "",
+    image: "",  
   }); 
 
   const [isEditing, setIsEditing] = useState(false);
@@ -40,11 +41,13 @@ function App() {
     }, [])
   
   // Agregar un nuevo anime
-  const addAnime = (e) => {
+  const addAnime = async (e) => {
     e.preventDefault();
-    if (!anime.title.text || !anime.studio || !anime.genres || !anime.description)
+    if (!anime.title.text || !anime.studio || !anime.genres || !anime.description) {
+      alert("Por favor, completa todos los campos obligatorios.");
       return;
-
+    }
+  
     const newAnime = {
       studio: anime.studio,
       genres: Array.isArray(anime.genres)
@@ -55,57 +58,44 @@ function App() {
       title: { text: anime.title.text, link: anime.title.link },
       start_date: anime.start_date,
     };
-
-    fetch(API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newAnime),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error adding new anime");
-        }
-        return response.json();
-      })
-      .then(() => {
-        setAnimeList([...animeList, newAnime]);
-        setShowModal(false);
-      })
-      .catch((error) => console.error("Error adding new anime:", error));
-    setAnime({
-      studio: "",
-      genres: "",
-      hype: 0,
-      description: "",
-      title: { text: "", link: "" },
-      start_date: "",
-      image,
-    });
-  };
-
-  /*const addIdToAnimeList = (animeList) => {
-    let nextId = 1;
-    animeList.forEach((anime) => {
-      if (anime.id && anime.id >= nextId) {
-        nextId = anime.id + 1;
-      }
-    });
-
-    return animeList.map((anime) => {
-      if (!anime.id) {
-        anime.id = nextId; 
-        nextId++; 
-      }
-      return anime;
-    });
-  };
-  useEffect(() => {
-    const animeListWithIds = addIdToAnimeList(animeData);
-    setAnimeList(animeListWithIds);
-  }, []); */
   
+    try {
+      const response = await fetch(`${API}/Anime`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newAnime),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error adding new anime: ${response.statusText}`);
+      }
+  
+      const addedAnime = await response.json();
+      
+      // Actualiza la lista de animes
+      setAnimeList((prevList) => [...prevList, { ...newAnime, id: addedAnime.id }]);
+      
+      // Cierra el modal y restablece el estado
+      setShowModal(false);
+      setAnime({
+        studio: "",
+        genres: "",
+        hype: 0,
+        description: "",
+        title: { text: "", link: "" },
+        start_date: "",
+        image: "",
+      });
+  
+    } catch (error) {
+      console.error("Error adding new anime:", error);
+      alert("No se pudo agregar el anime. Intenta de nuevo."); // Mensaje de alerta para el usuario
+    }
+  };
+  
+
   // Eliminar un anime
   const deleteAnime = async (id) => {
     const confirmDelete = window.confirm(
@@ -134,8 +124,6 @@ function App() {
       }
     }
 };
-  
-
   // Editar un anime
   const editAnime = (anime) => {
     setIsEditing(true);
@@ -161,41 +149,44 @@ function App() {
   };
 
   // Actualizar un anime
-  const updateAnime = (e) => {
+  const updateAnime = async (e) => {
     e.preventDefault();
 
-    fetch(`${API}/${currentAnimeId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updateAnime),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error updating anime");
-        }
-        return response.json();
-      })
-      .then(() => {
-        setAnimeList(
-          animeList.map((item) =>
-            item.id === currentAnimeId
-              ? {
-                  ...item,
-                  ...anime,
-                  genres: Array.isArray(anime.genres)
+    try {
+        // Hacer una petición PUT a la API para actualizar el anime
+        const response = await fetch(`${API}/Anime/${currentAnimeId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ...anime,
+                genres: Array.isArray(anime.genres)
                     ? anime.genres
                     : anime.genres.split(", ").map((genre) => genre.trim()),
-                }
-              : item
-          )
-        );
-        closeModal();
-      })
-      .catch((error) => console.error("Error updating anime:", error));
-  };
+            }),
+        });
 
+        // Comprobar si la respuesta es ok
+        if (!response.ok) {
+            throw new Error(`Error updating anime: ${response.statusText}`);
+        }
+
+        const updatedAnime = await response.json();
+
+        // Actualizar la lista de animes en el estado
+        setAnimeList((prevList) =>
+            prevList.map((item) =>
+                item.id === currentAnimeId ? updatedAnime : item
+            )
+        );
+
+        // Opcional: cerrar el modal después de la actualización
+        closeModal();
+    } catch (error) {
+        console.error("Error updating anime:", error);
+    }
+};
   // Búsqueda de anime
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -328,6 +319,23 @@ function App() {
                   setAnime({ ...anime, description: e.target.value })
                 }
               />
+              <input
+                type="text"
+                placeholder="URL del anime (opcional)"
+                value={anime.title.link}  // Utiliza anime.title.link para almacenar la URL
+                onChange={(e) =>
+                  setAnime({
+                    ...anime,
+                    title: { ...anime.title, link: e.target.value },
+                  })
+                }
+              />
+              <input
+                type="text"
+                placeholder="URL de la imagen (opcional)"
+                value={anime.image}
+                onChange={(e) => setAnime({ ...anime, image: e.target.value })}
+              />
               <button type="submit">Agregar Anime</button>
               <button type="button" onClick={closeModal}>
                 Cancelar
@@ -348,6 +356,17 @@ function App() {
                   setAnime({
                     ...anime,
                     title: { ...anime.title, text: e.target.value },
+                  })
+                }
+              />
+              <input
+                type="text"
+                placeholder="URL del anime"
+                value={anime.title.link}
+                onChange={(e) =>
+                  setAnime({
+                    ...anime,
+                    title: { ...anime.title, link: e.target.value },
                   })
                 }
               />
@@ -380,6 +399,12 @@ function App() {
                 onChange={(e) =>
                   setAnime({ ...anime, description: e.target.value })
                 }
+              />
+              <input
+                type="text"
+                placeholder="URL de la imagen (opcional)"
+                value={anime.image}
+                onChange={(e) => setAnime({ ...anime, image: e.target.value })}
               />
               <button type="submit">Guardar cambios</button>
               <button type="button" onClick={closeModal}>
