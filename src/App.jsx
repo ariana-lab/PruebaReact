@@ -23,10 +23,13 @@ function App() {
   const API = import.meta.env.VITE_API_URL;
 
   const getAnimeList = async () => {
+    
     try {
       const res = await axios.get(`${API}/Anime`);
+      console.log(res.data)
       setAnimeList(res.data);  // Actualiza el estado solo una vez
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching data from API:", error);
     }
   };
@@ -86,23 +89,43 @@ function App() {
   };
 
   // Eliminar un anime
-  const deleteAnime = (id) => {
+  const deleteAnime = async (hype) => {
     const confirmDelete = window.confirm(
       "¿Estás seguro de que quieres eliminar este anime?"
     );
+  
     if (confirmDelete) {
-      fetch(`${API}/${id}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Error deleting anime");
-          }
-          setAnimeList(animeList.filter((anime) => anime.id !== id));
-        })
-        .catch((error) => console.error("Error deleting anime:", error));
+      try {
+        // Buscar el anime con el hype específico
+        const response = await fetch(`${API}/Anime?hype=${hype}`);
+        const animeList = await response.json();
+  
+        // Comprobar si existe un anime con ese hype
+        if (animeList.length === 0) {
+          throw new Error(`No se encontró ningún anime con el hype ${hype}`);
+        }
+  
+        // Eliminar el primer anime que tenga ese hype (debería haber solo uno)
+        const animeToDelete = animeList[0]; // Suponiendo que solo hay uno con ese hype
+  
+        const deleteResponse = await fetch(`${API}/Anime/${animeToDelete.id}`, {
+          method: "DELETE",
+        });
+  
+        if (!deleteResponse.ok) {
+          throw new Error("Error al eliminar el anime");
+        }
+  
+        // Actualizar la lista de anime después de eliminar
+        setAnimeList(animeList.filter((anime) => anime.hype !== hype));
+        await getAnimeList(); // Refrescar la lista después de eliminar
+  
+      } catch (error) {
+        console.error("Error deleting anime:", error);
+      }
     }
   };
+  
 
   // Editar un anime
   const editAnime = (anime) => {
@@ -132,12 +155,13 @@ function App() {
   const updateAnime = (e) => {
     e.preventDefault();
 
+    
     fetch(`${API}/${currentAnimeId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(anime),
+      body: JSON.stringify(updateAnime),
     })
       .then((response) => {
         if (!response.ok) {
@@ -170,8 +194,9 @@ function App() {
   };
 
   const filteredAnimeList = animeList.filter((anime) =>
-    anime.title.text.toLowerCase().includes(searchTerm.toLowerCase())
+    anime.title && anime.title.text && anime.title.text.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
 
   return (
     <div className="container">
@@ -241,7 +266,7 @@ function App() {
               </button>
               <button
                 className="delete"
-                onClick={() => deleteAnime(anime.id)}
+                onClick={() => deleteAnime(anime.hype)}
               >
                 Eliminar
               </button>
