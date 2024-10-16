@@ -30,7 +30,7 @@ function App() {
     try {
       const res = await axios.get(`${API}/Anime`);
       console.log(res.data)
-      setAnimeList(res.data);  // Actualiza el estado solo una vez
+      setAnimeList(res.data);
     } 
     catch (error) {
       console.error("Error fetching data from API:", error);
@@ -102,7 +102,7 @@ function App() {
 
     if (confirmDelete) {
       try {
-        // Hacer una petición DELETE a la API para eliminar el anime
+        // Hacer una petición eliminar a la API
         const response = await fetch(`${API}/Anime/${id}`, {
           method: "DELETE",
         });
@@ -115,7 +115,7 @@ function App() {
         // Actualizar la lista de animes en el estado
         setAnimeList(animeList.filter((anime) => anime.id !== id));
 
-        // Opcional: Si quieres obtener la lista actualizada desde la API
+        //Obtener la lista actualizada desde la API
         await getAnimeList();
       } catch (error) {
         console.error("Error deleting anime:", error);
@@ -163,11 +163,11 @@ function App() {
             }),
         });
 
-        // Comprobar si la respuesta es ok
+        // Comprobar la respuesta
         if (!response.ok) {
             throw new Error(`Error updating anime: ${response.statusText}`);
         }
-
+        //conectar el json
         const updatedAnime = await response.json();
 
         // Actualizar la lista de animes en el estado
