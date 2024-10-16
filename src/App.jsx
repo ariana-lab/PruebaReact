@@ -29,7 +29,7 @@ function App() {
     
     try {
       const res = await axios.get(`${API}/Anime`);
-      console.log(res.data)
+
       setAnimeList(res.data);
     } 
     catch (error) {
@@ -117,7 +117,8 @@ function App() {
 
         //Obtener la lista actualizada desde la API
         await getAnimeList();
-      } catch (error) {
+      } 
+      catch (error) {
         console.error("Error deleting anime:", error);
       }
     }
