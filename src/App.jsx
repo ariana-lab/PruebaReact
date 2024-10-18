@@ -26,15 +26,8 @@ function App() {
 
 
   const getAnimeList = async () => {
-    
-    try {
       const res = await axios.get(`${API}/Anime`);
-
       setAnimeList(res.data);
-    } 
-    catch (error) {
-      console.error("Error fetching data from API:", error);
-    }
   };
   useEffect(() => {
     getAnimeList();
@@ -47,7 +40,7 @@ function App() {
       alert("Por favor, completa todos los campos obligatorios.");
       return;
     }
-  
+
     const newAnime = {
       studio: anime.studio,
       genres: Array.isArray(anime.genres)
@@ -58,8 +51,6 @@ function App() {
       title: { text: anime.title.text, link: anime.title.link },
       start_date: anime.start_date,
     };
-  
-    try {
       const response = await fetch(`${API}/Anime`, {
         method: "POST",
         headers: {
@@ -67,11 +58,6 @@ function App() {
         },
         body: JSON.stringify(newAnime),
       });
-  
-      if (!response.ok) {
-        throw new Error(`Error adding new anime: ${response.statusText}`);
-      }
-  
       const addedAnime = await response.json();
       
       // Actualiza la lista de animes
@@ -88,11 +74,6 @@ function App() {
         start_date: "",
         image: "",
       });
-  
-    } catch (error) {
-      console.error("Error adding new anime:", error);
-      alert("No se pudo agregar el anime. Intenta de nuevo."); // Mensaje de alerta para el usuario
-    }
   };
   // Eliminar un anime
   const deleteAnime = async (id) => {
@@ -101,26 +82,17 @@ function App() {
     );
 
     if (confirmDelete) {
-      try {
-        // Hacer una petición eliminar a la API
+
         const response = await fetch(`${API}/Anime/${id}`, {
           method: "DELETE",
         });
 
-        // Comprobar si la respuesta es ok
         if (!response.ok) {
           throw new Error(`Error deleting anime: ${response.statusText}`);
         }
-
-        // Actualizar la lista de animes en el estado
-        setAnimeList(animeList.filter((anime) => anime.id !== id));
-
-        //Obtener la lista actualizada desde la API
+        
+        setAnimeList(animeList.filter((anime) => anime.id !== id)); // Actualizar la lista de animes en el estado
         await getAnimeList();
-      } 
-      catch (error) {
-        console.error("Error deleting anime:", error);
-      }
     }
   };
   // Editar un anime
@@ -148,9 +120,6 @@ function App() {
   // Actualizar un anime
   const updateAnime = async (e) => {
     e.preventDefault();
-
-    try {
-        // Hacer una petición PUT a la API para actualizar el anime
         const response = await fetch(`${API}/Anime/${currentAnimeId}`, {
             method: "PUT",
             headers: {
@@ -164,25 +133,14 @@ function App() {
             }),
         });
 
-        // Comprobar la respuesta
-        if (!response.ok) {
-            throw new Error(`Error updating anime: ${response.statusText}`);
-        }
-        //conectar el json
         const updatedAnime = await response.json();
 
-        // Actualizar la lista de animes en el estado
-        setAnimeList((prevList) =>
+        setAnimeList((prevList) => //Actualizar la lista de animes en el estado
             prevList.map((item) =>
                 item.id === currentAnimeId ? updatedAnime : item
             )
         );
-
-        // Opcional: cerrar el modal después de la actualización
         closeModal();
-    } catch (error) {
-        console.error("Error updating anime:", error);
-    }
   };
   // Búsqueda de anime
   const handleSearchChange = (event) => {
