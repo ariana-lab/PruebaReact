@@ -26,9 +26,15 @@ function App() {
 
 
   const getAnimeList = async () => {
-      const res = await axios.get(`${API}/Anime`);
+      const res = await axios.get(`${API}`);
+
       setAnimeList(res.data);
+
+      
+    
   };
+
+  
   useEffect(() => {
     getAnimeList();
     }, [])
@@ -51,7 +57,7 @@ function App() {
       title: { text: anime.title.text, link: anime.title.link },
       start_date: anime.start_date,
     };
-      const response = await fetch(`${API}/Anime`, {
+      const response = await fetch(`${API}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -83,7 +89,7 @@ function App() {
 
     if (confirmDelete) {
 
-        const response = await fetch(`${API}/Anime/${id}`, {
+        const response = await fetch(`${API}/${id}`, {
           method: "DELETE",
         });
 
@@ -120,7 +126,7 @@ function App() {
   // Actualizar un anime
   const updateAnime = async (e) => {
     e.preventDefault();
-        const response = await fetch(`${API}/Anime/${currentAnimeId}`, {
+        const response = await fetch(`${API}/${currentAnimeId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -146,8 +152,8 @@ function App() {
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
-  const filteredAnimeList = animeList.filter((anime) =>
-    anime.title && anime.title.text && anime.title.text.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAnimeList = animeList.filter((anime) => (anime.title.text && anime.title.text.toLowerCase().includes(searchTerm.toLowerCase()))
+  
   );
   
   return (

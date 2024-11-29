@@ -3,14 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage":"https://yourusername.github.io/PruebaReact",
+  "homepage": "https://yourusername.github.io/PruebaReact",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy" : "gh-pages -d dist"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "axios": "^1.7.7",
@@ -31,6 +31,6 @@
     "gh-pages": "^6.2.0",
     "globals": "^15.9.0",
     "json-server": "^1.0.0-beta.3",
-    "vite": "^5.4.8"
+    "vite": "^5.4.11"
   }
 }
