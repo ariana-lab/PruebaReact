@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import axios from 'axios';
 import tituloAnime from "./img/tituloAnime.png"
-
+// hola ari
 
 function App() {
   const [animeList, setAnimeList] = useState([]);
