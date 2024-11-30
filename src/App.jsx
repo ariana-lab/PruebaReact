@@ -7,12 +7,12 @@ import tituloAnime from "./img/tituloAnime.png"
 function App() {
   const [animeList, setAnimeList] = useState([]);
   const [anime, setAnime] = useState({
-    id:"",
     studio: "",
     genres: "",
     hype: 0,
     description: "",
-    title: { text: "", link: "" },
+    title: "",
+    link: "",
     start_date: "",
     image: "",  
   }); 
@@ -26,41 +26,46 @@ function App() {
 
 
   const getAnimeList = async () => {
+    try {
       const res = await axios.get(`${API}`);
-
+      console.log("Respuesta de la API:", res.data);
       setAnimeList(res.data);
-
       
-    
+    } catch (error) {
+      console.error("Error al obtener la lista de animes:", error);
+    }
   };
-
   
+
   useEffect(() => {
     getAnimeList();
     }, [])
   
   // Agregar un nuevo anime
-  const addAnime = async (e) => {
-    e.preventDefault();
-    if (!anime.title.text || !anime.studio || !anime.genres || !anime.description) {
-      alert("Por favor, completa todos los campos obligatorios.");
-      return;
-    }
+    const addAnime = async (e) => {
+      e.preventDefault();
+      if (!anime.title || !anime.studio || !anime.genres || !anime.description) {
+        alert("Por favor, completa todos los campos obligatorios.");
+        return;
+      }
 
-    const newAnime = {
-      studio: anime.studio,
-      genres: Array.isArray(anime.genres)
-        ? anime.genres
-        : anime.genres.split(", ").map((genre) => genre.trim()),
-      hype: anime.hype,
-      description: anime.description,
-      title: { text: anime.title.text, link: anime.title.link },
-      start_date: anime.start_date,
-    };
-      const response = await fetch(`${API}`, {
+      const newAnime = {
+        studio: anime.studio,
+        genres: Array.isArray(anime.genres)
+          ? anime.genres
+          : anime.genres.split(",").map((genre) => genre.trim()),
+        hype: anime.hype,
+        description: anime.description,
+        title: anime.title, // Ahora simplemente el texto del título
+        link: anime.link, // Añadir directamente el link separado
+        image: anime.image, // Incluir la imagen
+      };
+    
+      const response = await fetch(`${API}/anime`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify(newAnime),
       });
@@ -76,9 +81,10 @@ function App() {
         genres: "",
         hype: 0,
         description: "",
-        title: { text: "", link: "" },
+        title: "",
+        link: "",
         start_date: "",
-        image: "",
+        image: "", 
       });
   };
   // Eliminar un anime
@@ -117,7 +123,8 @@ function App() {
       genres: "",
       hype: 0,
       description: "",
-      title: { text: "", link: "" },
+      title: "",
+      link: "",
       start_date: "",
     });
     setIsEditing(false);
@@ -126,36 +133,36 @@ function App() {
   // Actualizar un anime
   const updateAnime = async (e) => {
     e.preventDefault();
-        const response = await fetch(`${API}/${currentAnimeId}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                ...anime,
-                genres: Array.isArray(anime.genres)
-                    ? anime.genres
-                    : anime.genres.split(", ").map((genre) => genre.trim()),
-            }),
-        });
-
-        const updatedAnime = await response.json();
-
-        setAnimeList((prevList) => //Actualizar la lista de animes en el estado
-            prevList.map((item) =>
-                item.id === currentAnimeId ? updatedAnime : item
-            )
-        );
-        closeModal();
+  
+    try {
+      const response = await axios.put(`${API}/${currentAnimeId}`, {
+        ...anime, 
+        genres: Array.isArray(anime.genres)
+          ? anime.genres 
+          : anime.genres.split(", ").map((genre) => genre.trim()), 
+      });
+  
+  
+      setAnimeList((prevList) =>
+        prevList.map((item) =>
+          item.id === currentAnimeId ? response.data  : item
+        )
+      );
+  
+      closeModal(); // Cerramos el modal
+    } catch (error) {
+      console.error("Error al actualizar el anime:", error);
+    }
   };
   // Búsqueda de anime
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
-  const filteredAnimeList = animeList.filter((anime) => (anime.title.text && anime.title.text.toLowerCase().includes(searchTerm.toLowerCase()))
-  
-  );
-  
+  const filteredAnimeList = animeList.filter((anime) => {
+    const titleText = anime.title || "";
+    return titleText.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
   return (
     <div className="container">
       <h1>
@@ -172,79 +179,77 @@ function App() {
         Agregar Anime
       </button>
       <ul>
-        {filteredAnimeList.map((anime) => (
-          <li key={anime.id} className="anime-item">
-            <div className="anime-info">
-              <a
-                href={anime.title.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  className="anime-img"
-                  src={anime.image}
-                  alt="Imagen del anime"
-                />
-              </a>
-              <div className="anime-details">
-                <h2>
-                  <a
-                    href={anime.title.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {anime.title.text}
-                  </a>
-                </h2>
-                <p>
-                  <strong>Estudio:</strong> {anime.studio}
-                </p>
-                <p>
-                  <strong>Géneros:</strong>{" "}
-                  {Array.isArray(anime.genres)
-                    ? anime.genres.join(", ")
-                    : anime.genres}
-                </p>
-                <p>
-                  <strong>Hype:</strong> {anime.hype}
-                </p>
-                <p>{anime.description}</p>
-                <a
-                  href={anime.title.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Ver más
-                </a>
-              </div>
-            </div>
-            <div className="anime-actions">
-              <button className="edit" onClick={() => editAnime(anime)}>
-                Editar
-              </button>
-              <button
-                className="delete"
-                onClick={() => deleteAnime(anime.id)}
-              >
-                Eliminar
-              </button>
-            </div>
-          </li>
-        ))}
+        
+      {filteredAnimeList.map((anime) => (
+        <li key={anime.id} className="anime-item">
+        <div className="anime-info">
+          <a
+            href={anime.link && typeof anime.link === 'string' ? anime.link : "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              className="anime-img"
+              src={anime.image || "default-image.jpg"}
+              alt="Imagen del anime"
+            />
+          </a>
+      
+          <div className="anime-details">
+          <h2>
+          <a
+            href={anime.link && typeof anime.link === 'string' ? anime.link : "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {anime.title && anime.title.trim() !== "" ? anime.title : "Título no disponible"}
+          </a>
+        </h2>
+            <p>
+              <strong>Estudio:</strong> {anime.studio}
+            </p>
+            <p>
+              <strong>Géneros:</strong> {anime.genres.join(", ")}
+            </p>
+            <p>
+              <strong>Hype:</strong> {anime.hype}
+            </p>
+            <p>{anime.description}</p>
+      
+            {/* Ver más */}
+            <a
+              href={anime.link && typeof anime.link === 'string' ? anime.link : "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ver más
+            </a>
+          </div>
+        </div>
+        <div className="anime-actions">
+          <button className="edit" onClick={() => editAnime(anime)}>
+            Editar
+          </button>
+          <button className="delete" onClick={() => deleteAnime(anime.id)}>
+            Eliminar
+          </button>
+        </div>
+      </li>
+        
+      ))}
+    
       </ul>
       {showModal && (
         <div className="modal">
           <div className="modal-content">
             <h2>Agregar Anime</h2>
             <form onSubmit={addAnime} className="from-modal">
-              <input
+            <input
                 type="text"
                 placeholder="Título del anime"
-                value={anime.title.text}
+                value={anime.title} // Ahora directamente de anime.title
                 onChange={(e) =>
-                  setAnime({
-                    ...anime,
-                    title: { ...anime.title, text: e.target.value }})
+                  setAnime({ ...anime, title: e.target.value }) // Actualizar directamente anime.title
                 }
                 className="modal-input"
               />
@@ -287,15 +292,13 @@ function App() {
               <input
                 type="text"
                 placeholder="URL del anime (opcional)"
-                value={anime.title.link}  // Utiliza anime.title.link para almacenar la URL
+                value={anime.link} 
                 onChange={(e) =>
-                  setAnime({
-                    ...anime,
-                    title: { ...anime.title, link: e.target.value },
-                  })
+                  setAnime({ ...anime, link: e.target.value })
                 }
                 className="modal-input"
               />
+
               <input
                 type="text"
                 placeholder="URL de la imagen (opcional)"
@@ -321,21 +324,16 @@ function App() {
           <div className="modal-content">
             <h2>Editar Anime</h2>
             <form onSubmit={updateAnime} className="from-modal">
-              <input
+            <input
                 type="text"
-                value={anime.title.text}
-                onChange={(e) =>
-                  setAnime({
-                    ...anime,
-                    title: { ...anime.title, text: e.target.value },
-                  })
-                }
+                value={anime.title}
+                onChange={(e) => setAnime({ ...anime, title: e.target.value })}
                 className="modal-input"
               />
               <input
                 type="text"
                 placeholder="URL del anime"
-                value={anime.title.link}
+                value={anime.link}
                 onChange={(e) =>
                   setAnime({
                     ...anime,
