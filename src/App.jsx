@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import axios from 'axios';
 import tituloAnime from "./img/tituloAnime.png"
-// hola ari
 
 function App() {
   const [animeList, setAnimeList] = useState([]);
@@ -50,15 +49,13 @@ function App() {
       }
 
       const newAnime = {
-        studio: anime.studio,
-        genres: Array.isArray(anime.genres)
-          ? anime.genres
-          : anime.genres.split(",").map((genre) => genre.trim()),
-        hype: anime.hype,
-        description: anime.description,
-        title: anime.title, // Ahora simplemente el texto del título
-        link: anime.link, // Añadir directamente el link separado
-        image: anime.image, // Incluir la imagen
+        studio: anime.studio.trim(),
+        genres: Array.isArray(anime.genres) ? anime.genres : anime.genres.split(",").map((g) => g.trim()),
+        hype: anime.hype || 0,
+        description: anime.description.trim(),
+        title: anime.title.trim(),
+        link: anime.link.trim() || null,
+        image: anime.image.trim() || null,
       };
     
       const response = await fetch(`${API}/anime`, {
@@ -216,7 +213,6 @@ function App() {
             </p>
             <p>{anime.description}</p>
       
-            {/* Ver más */}
             <a
               href={anime.link && typeof anime.link === 'string' ? anime.link : "#"}
               target="_blank"
