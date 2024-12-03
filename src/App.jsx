@@ -130,26 +130,19 @@ function App() {
   // Actualizar un anime
   const updateAnime = async (e) => {
     e.preventDefault();
-  
-    try {
       const response = await axios.put(`${API}/${currentAnimeId}`, {
         ...anime, 
         genres: Array.isArray(anime.genres)
           ? anime.genres 
           : anime.genres.split(", ").map((genre) => genre.trim()), 
       });
-  
-  
       setAnimeList((prevList) =>
         prevList.map((item) =>
           item.id === currentAnimeId ? response.data  : item
         )
       );
-  
+      
       closeModal(); // Cerramos el modal
-    } catch (error) {
-      console.error("Error al actualizar el anime:", error);
-    }
   };
   // Búsqueda de anime
   const handleSearchChange = (event) => {
