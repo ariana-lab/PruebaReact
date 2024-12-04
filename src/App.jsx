@@ -25,17 +25,11 @@ function App() {
 
 
   const getAnimeList = async () => {
-    try {
       const res = await axios.get(`${API}`);
       console.log("Respuesta de la API:", res.data);
       setAnimeList(res.data);
-      
-    } catch (error) {
-      console.error("Error al obtener la lista de animes:", error);
-    }
   };
   
-
   useEffect(() => {
     getAnimeList();
     }, [])
